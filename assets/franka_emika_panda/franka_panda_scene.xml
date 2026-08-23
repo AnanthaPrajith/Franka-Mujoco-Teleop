@@ -1,0 +1,61 @@
+<!--
+  assets/franka_emika_panda/franka_panda_scene.xml
+
+  Viewer check:
+    python -m mujoco.viewer --mjcf=assets/franka_emika_panda/franka_panda_scene.xml
+
+  This file must live NEXT TO panda.xml. panda.xml declares
+  <compiler meshdir="assets"/> (relative), and MuJoCo resolves that relative to
+  the ROOT file's directory, not the included file's own directory. Put this
+  scene anywhere else and mesh loading fails with a scrambled path. Every
+  official mujoco_menagerie scene.xml is co-located with its robot for the
+  same reason.
+-->
+<mujoco model="franka_pick_scene">
+
+  <include file="panda.xml"/>
+
+  <visual>
+    <global offwidth="640" offheight="480"/>
+  </visual>
+
+  <worldbody>
+    <light name="top_light" pos="0 0 2" dir="0 0 -1" diffuse="0.8 0.8 0.8"/>
+
+    <!-- Table: top surface at z=0, so the Panda (whose base sits at the world
+         origin) stands on it with panda.xml left unmodified.
+         Box size is HALF-extents: 1.2 x 0.8 x 0.4 m, centre 0.2 below the top. -->
+    <body name="table" pos="0 0 0">
+      <geom name="table_top" type="box"
+            size="0.6 0.4 0.2"
+            pos="0 0 -0.2"
+            rgba="0.6 0.4 0.2 1"/>
+    </body>
+
+    <!-- 4cm cube on the table, ~45cm in front of the base (within reach).
+         env.reset() randomizes x in [0.35, 0.55], y in [-0.15, 0.15].
+         The freejoint is what makes it movable — without it the cube is
+         welded to the world and cannot be picked up. -->
+    <body name="target_object" pos="0.45 0 0.02">
+      <freejoint name="target_object_freejoint"/>
+      <geom name="target_object_geom" type="box"
+            size="0.02 0.02 0.02"
+            rgba="0.9 0.1 0.1 1" mass="0.05"/>
+    </body>
+
+    <camera name="front_cam" pos="1.0 0 0.6" xyaxes="0 1 0  -0.6 0 0.8"/>
+  </worldbody>
+
+  <!--
+    wrist_cam and ee_site are NOT here. They must be children of the robot's
+    hand body, which lives inside the included panda.xml. Add them there:
+
+      <body name="hand" pos="0 0 0.107" quat="0.9238795 0 0 -0.3826834">
+        <camera name="wrist_cam" pos="0 0 0.05" xyaxes="0 -1 0  1 0 0"/>
+        <site name="ee_site" pos="0 0 0.10" size="0.01" rgba="0 1 0 1"/>
+        ...
+
+    ee_site is required — DiffIKSolver reads the EE pose from it.
+  -->
+
+</mujoco>

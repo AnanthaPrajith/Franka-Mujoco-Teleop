@@ -1,0 +1,10 @@
+recorded_episodes/
+assets/franka_emika_panda/
+__pycache__/
+*.pyc
+.venv/
+venv/
+envs/
+outputs/
+*.egg-info/
+.DS_Store
