@@ -1,0 +1,13 @@
+recorded_episodes/
+assets/franka_emika_panda/franka_emika_panda/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+envs/
+outputs/
+*.egg-info/
+.DS_Store
+
+# Local LeRobot/Hugging Face dataset output.
+lerobot_dataset/

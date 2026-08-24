@@ -21,7 +21,7 @@ from lerobot.datasets.lerobot_dataset import LeRobotDataset
 # ==========================================================================
 # Config — must match record_episode.py
 # ==========================================================================
-HF_REPO_ID = "your_username/franka_pick_mujoco"   # <-- CHANGE THIS
+HF_REPO_ID = "Prajith7roboq/franka_pick_mujoco"   # <-- CHANGE THIS
 RAW_EPISODES_DIR = "recorded_episodes"
 FPS = 15
 CAMERA_NAMES = ["front_cam", "wrist_cam"]
@@ -79,10 +79,12 @@ def add_episode_to_dataset(dataset: LeRobotDataset, ep: dict):
         frame = {
             "observation.state": ep["states"][i].astype(np.float32),
             "action": ep["actions"][i].astype(np.float32),
+            # LeRobot 0.4.x expects the natural-language task in each frame.
+            "task": ep["task_instruction"],
         }
         for cam, arr in ep["images"].items():
             frame[f"observation.images.{cam}"] = arr[i]
-        dataset.add_frame(frame, task=ep["task_instruction"])
+        dataset.add_frame(frame)
 
     # This is what actually writes the episode (encodes video, writes parquet).
     # Forget it and you get an empty dataset with no error.

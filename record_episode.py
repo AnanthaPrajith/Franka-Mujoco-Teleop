@@ -28,6 +28,7 @@ NOTE ON THE PERSISTENT TARGET
 """
 
 import time
+from pathlib import Path
 import numpy as np
 import mujoco
 import mujoco.viewer
@@ -58,6 +59,7 @@ LIFT_THRESHOLD = 0.05
 
 AUTO_SAVE_ON_SUCCESS = True
 SUCCESS_HOLD_TICKS = 15
+TARGET_EPISODES = 50
 
 
 def main():
@@ -76,7 +78,17 @@ def main():
     joint_limits = env.get_joint_limits()
     g_lo, g_hi = env.gripper_ctrlrange
 
-    episode_index = 0
+    # Resume safely when recording is restarted; never overwrite an existing
+    # demonstration. Gaps in numbering are allowed.
+    existing_episode_paths = sorted(Path(SAVE_DIR).glob("episode_*.npz"))
+    existing_indices = []
+    for path in existing_episode_paths:
+        try:
+            existing_indices.append(int(path.stem.rsplit("_", 1)[1]))
+        except (IndexError, ValueError):
+            pass
+    episode_index = max(existing_indices, default=-1) + 1
+    total_saved = len(existing_episode_paths)
     success_ticks = 0
     dt = 1.0 / CONTROL_HZ
 
@@ -88,6 +100,7 @@ def main():
     print(" w/s: +X/-X   a/d: -Y/+Y   e/c: +Z/-Z")
     print(" q: gripper   r: save+reset   x: discard+reset   esc: quit")
     print(f" start EE pos: {np.round(ee_target_pos, 3)}")
+    print(f" saved episodes: {total_saved}/{TARGET_EPISODES}; next index: {episode_index}")
     print("=" * 62)
 
     def do_reset():
@@ -98,12 +111,14 @@ def main():
         success_ticks = 0
 
     def end_episode(save: bool):
-        nonlocal episode_index
+        nonlocal episode_index, total_saved
         n = recorder.num_frames()
         if save and n > 0:
             recorder.save_episode(episode_index, success=True)
             print(f"[episode {episode_index}] SAVED  ({n} frames)")
             episode_index += 1
+            total_saved += 1
+            print(f"[progress] {total_saved}/{TARGET_EPISODES} episodes")
         else:
             recorder.discard_episode()
             print(f"[discarded] ({n} frames)")
@@ -111,7 +126,7 @@ def main():
 
     try:
         with mujoco.viewer.launch_passive(env.model, env.data) as viewer:
-            while viewer.is_running():
+            while viewer.is_running() and total_saved < TARGET_EPISODES:
                 loop_start = time.time()
 
                 if controller.should_quit():
@@ -172,7 +187,7 @@ def main():
     finally:
         controller.close()
         env.close()
-        print(f"\nDone. {episode_index} episodes saved to {SAVE_DIR}/")
+        print(f"\nDone. {total_saved}/{TARGET_EPISODES} episodes saved to {SAVE_DIR}/")
 
 
 if __name__ == "__main__":
