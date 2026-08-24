@@ -1,6 +1,6 @@
-recorded_episodes/
-assets/franka_emika_panda/
-__pycache__/
+**recorded_episodes/**
+assets/franka_emika_panda/**
+teleop/__pycache__/
 *.pyc
 .venv/
 venv/
