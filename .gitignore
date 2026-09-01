@@ -10,3 +10,5 @@ outputs/
 
 # Local LeRobot/Hugging Face dataset output.
 lerobot_dataset/
+# Accidental continuation created before the fresh collection was configured.
+recorded_episodes/episode_0050.npz

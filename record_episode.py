@@ -47,7 +47,7 @@ CAMERA_NAMES = ["front_cam", "wrist_cam"]
 RENDER_SIZE = (224, 224)
 
 CONTROL_HZ = 15          # MUST match FPS in convert_to_lerobot.py
-SAVE_DIR = "recorded_episodes"
+SAVE_DIR = "recorded_episodes_fresh"
 TASK_INSTRUCTION = "pick up the red cube"
 
 STEP_SIZE = 0.01         # metres per key per tick

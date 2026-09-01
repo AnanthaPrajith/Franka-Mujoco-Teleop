@@ -1,1 +1,2 @@
 recorded_episodes/*.npz filter=lfs diff=lfs merge=lfs -text
+recorded_episodes_fresh/*.npz filter=lfs diff=lfs merge=lfs -text

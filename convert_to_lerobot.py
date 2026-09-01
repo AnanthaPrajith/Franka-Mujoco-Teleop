@@ -21,8 +21,8 @@ from lerobot.datasets.lerobot_dataset import LeRobotDataset
 # ==========================================================================
 # Config — must match record_episode.py
 # ==========================================================================
-HF_REPO_ID = "Prajith7roboq/franka_pick_mujoco"   # <-- CHANGE THIS
-RAW_EPISODES_DIR = "recorded_episodes"
+HF_REPO_ID = "Prajith7roboq/franka_pick_mujoco_v2"
+RAW_EPISODES_DIR = "recorded_episodes_fresh"
 FPS = 15
 CAMERA_NAMES = ["front_cam", "wrist_cam"]
 IMAGE_SHAPE = (224, 224, 3)
